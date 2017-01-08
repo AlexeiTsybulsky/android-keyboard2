@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
 
         System.out.println("end");
-        sendCommand("end");
+        sendCommand(Command.end());
 
         if (outStream != null) {
             try {
@@ -230,8 +230,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
     public void AlertBox( String title, String message ){
         new AlertDialog.Builder(this)
                 .setTitle( title )
@@ -244,7 +242,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     private TextWatcher filterTextWatcher = new TextWatcher() {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -252,7 +249,10 @@ public class MainActivity extends AppCompatActivity {
 
             // Special case: backspace is <Backspace>
             if (keyboardString.isEmpty()){
-                sendCommand(Command.key(Command.BACKSPACE));
+                // Sets a delay
+                if (System.currentTimeMillis() % 10 == 0){
+                    sendCommand(Command.key(Command.BACKSPACE));
+                }
             }
 
             else if (keyboardString.length() > 1){

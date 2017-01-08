@@ -36,4 +36,9 @@ public class Command {
         return "mouse Scroll " + Integer.toString((int)(-y));
     }
 
+    public static String end(){
+        // Returns the end command.
+        return "end";
+    }
+
 }
