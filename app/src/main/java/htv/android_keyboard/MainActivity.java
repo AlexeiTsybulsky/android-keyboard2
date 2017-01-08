@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
@@ -70,9 +69,7 @@ public class MainActivity extends AppCompatActivity {
         enter.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v){
                 // Perform enter
-                // TODO
-                System.out.println("key <Enter>");
-                sendCommand("key <Enter>");
+                sendCommand(Command.key(Command.ENTER));
             }
         });
 
@@ -83,19 +80,15 @@ public class MainActivity extends AppCompatActivity {
         lClick.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 // Perform a left click
-                // TODO
-                System.out.println("mouse LClick0");
-                sendCommand("mouse LClick0");
-                sendCommand("mouse LClick1");
+                sendCommand(Command.mouseClick(Command.L_CLICK1));
+                sendCommand(Command.mouseClick(Command.L_CLICK2));
             }
         });
 
         rClick.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 // Perform a right click
-                // TODO
-                System.out.println("mouse RClick");
-                sendCommand("mouse RClick");
+                sendCommand(Command.mouseClick(Command.R_CLICK));
             }
         });
 
@@ -184,20 +177,27 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
+
+        System.out.println("end");
+        sendCommand("end");
+
         if (outStream != null) {
             try {
                 outStream.flush();
             } catch (IOException e) {
                 AlertBox("Fatal Error", "In onPause() and failed to flush output stream: " + e.getMessage() + ".");
             }
+
         }
 
-        try     {
+        try {
             btSocket.close();
         } catch (IOException e2) {
             AlertBox("Fatal Error", "In onPause() and failed to close socket." + e2.getMessage() + ".");
         }
     }
+
+
 
     @Override
     public void onStop() {
@@ -250,26 +250,20 @@ public class MainActivity extends AppCompatActivity {
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             String keyboardString = keyboard.getText().toString();
 
-            // TODO
-            // Implement writing here
-
             // Special case: backspace is <Backspace>
             if (keyboardString.isEmpty()){
-                System.out.println("key <Backspace>");
-                sendCommand("key <Backspace>");
+                sendCommand(Command.key(Command.BACKSPACE));
             }
 
             else if (keyboardString.length() > 1){
-                Character keyboardChar = keyboardString.charAt(1);
+                String keyboardChar = Character.toString(keyboardString.charAt(1));
                 // Special case: literal space is <Space>
-                if (keyboardChar == ' '){
-                    System.out.println("key <Space>");
-                    sendCommand("key <Space>");
+                if (keyboardChar.equals(" ")){
+                    sendCommand(Command.key(Command.SPACE));
                 }
                 // Char is exactly the same
                 else {
-                    System.out.println("key " + keyboardChar);
-                    sendCommand("key " + Character.toString(keyboardChar));
+                    sendCommand(Command.key(keyboardChar));
                 }
             }
         }
@@ -345,16 +339,12 @@ public class MainActivity extends AppCompatActivity {
         boolean eventConsumed = mGestureDetector.onTouchEvent(event);
         boolean touched = false;
 
-        // Only process mouse movement every 10 ms
+        // Magic numbers for x and y elements
+        final int X = 0, Y = 1;
+
         // Check if a gesture has occurred
         if (eventConsumed) {
             final float xCoordinate = event.getX(), yCoordinate = event.getY();
-
-            if (event.getAction() == MotionEvent.ACTION_UP){
-                PreviousCursorLocation.x = 0.f;
-                PreviousCursorLocation.y = 0.f;
-            }
-
 
             // Check if the press coordinates are within the touchpad boundary
             if (inTouchpad(xCoordinate, yCoordinate)){
@@ -362,17 +352,12 @@ public class MainActivity extends AppCompatActivity {
 
                 // If there are two fingers on the screen, scroll
                 if (event.getPointerCount() == 2){
-                    int changeInY = (int)(deltas[1] * -1.f);
-                    String command = ("mouse Scroll " + Integer.toString(changeInY));
-                    System.out.println(command);
-                    sendCommand(command);
+                    sendCommand(Command.mouseScroll(deltas[Y]));
                 }
 
                 // Else, just move the cursor
                 else {
-                    String command = ("mouse Move " + Float.toString(deltas[0]) + " " + Float.toString(deltas[1]));
-                    System.out.println(command);
-                    sendCommand(command);
+                    sendCommand(Command.mouseMove(deltas[X], deltas[Y]));
                 }
             }
 
