@@ -6,7 +6,8 @@ package htv.android_keyboard;
 
 public class Command {
     // Special strings for mouse
-    final static String L_CLICK = "LClick0";
+    final static String L_CLICK1 = "LClick0";
+    final static String L_CLICK2 = "LClick1";
     final static String R_CLICK = "RClick";
 
     // Special strings for keyboard
@@ -15,34 +16,29 @@ public class Command {
     final static String SPACE = "<Space>";
 
 
-    public String key(String s){
-        // Returns the command to input a certain character c.
+    public static String key(String s){
+        // Returns the command to input a certain string c.
         return "key " + s;
     }
 
-    public String mouseMove(float x, float y){
+    public static String mouseMove(float x, float y){
         // Returns the command to move the mouse.
-        return "mouse Move" + Float.toString(x) + " " + Float.toString(y);
+        return "mouse Move " + Float.toString(x) + " " + Float.toString(y);
     }
 
-    public String mouseClick(boolean isLeft){
-        // Left click
-        String command = "";
-        if (isLeft){
-            command = "mouse LClick0";
-        }
-
-        // Right click
-        else {
-            command = "mouse RClick";
-        }
-
-        return command;
+    public static String mouseClick(String s){
+        // Returns the command to click the mouse, left or right click.
+        return "mouse " + s;
     }
 
-    public String mouseScroll(float y){
+    public static String mouseScroll(float y){
         // Returns the command to scroll y.
-        return "mouse Scroll " + Integer.toString((int)(y));
+        return "mouse Scroll " + Integer.toString((int)(-y));
+    }
+
+    public static String end(){
+        // Returns the end command.
+        return "end";
     }
 
 }

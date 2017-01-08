@@ -21,4 +21,12 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener {
         return true;
     }
 
+    @Override
+    public boolean onDown(MotionEvent ev){
+        // Should set new previous coordinates every time screen is pressed again
+        PreviousCursorLocation.x = ev.getX();
+        PreviousCursorLocation.y = ev.getY();
+
+        return true;
+    }
 }
